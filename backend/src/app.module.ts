@@ -5,6 +5,7 @@ import { ColumnsModule } from './resources/columns/columns.module';
 import { CategoriesModule } from './resources/categories/categories.module';
 import { ColorsModule } from './resources/colors/colors.module';
 import { AuthService } from './auth/auth.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AuthService } from './auth/auth.service';
     ColumnsModule,
     CategoriesModule,
     ColorsModule,
+    AuthModule,
   ],
   providers: [AuthService]
 })
