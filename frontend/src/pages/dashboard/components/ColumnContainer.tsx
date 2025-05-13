@@ -111,7 +111,7 @@ export default function ColumnContainer(props: Props) {
                     >
                         0
                     </div>
-                    {!editMode && column.title}
+                    {!editMode && column.name}
                     {editMode && (
                         <input
                             className="
@@ -121,7 +121,7 @@ export default function ColumnContainer(props: Props) {
                             outline-none
                             px-2
                             "
-                            value={column.title}
+                            value={column.name}
                             onChange={(e) => updateColumn(column.id, e.target.
                                 value)}
                             autoFocus

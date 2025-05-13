@@ -1,11 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Column, Id, Task } from "../types/types";
 import { DragEndEvent, DragOverEvent, DragStartEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-
+import { request } from "@/lib/axios";
 
 export function useKanbanBoard() {
     const [columns, setColumns] = useState<Column[]>([]);
+
     const columnsId = useMemo(() => columns.map(col => col.id), [columns]);
 
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -21,6 +22,30 @@ export function useKanbanBoard() {
             },
         })
     )
+
+    useEffect(() => {
+        request({
+            url: "/columns/",
+            method: "get"
+        })
+            .then((columns) => {
+                if (columns) {
+                    setColumns(columns)
+                }
+            })
+    })
+
+    useEffect(() => {
+        request({
+            url: "/tasks/",
+            method: "get"
+        })
+            .then((tasks) => {
+                if (tasks) {
+                    setTasks(tasks)
+                }
+            })
+    })
 
 
     function generateId() {
@@ -51,12 +76,22 @@ export function useKanbanBoard() {
         setTasks(newTasks);
     }
 
-    function createNewColumn() {
-        const columnToAdd: Column = {
-            id: generateId(),
-            title: `New Column ${columns.length + 1}`,
-        };
-        setColumns([...columns, columnToAdd])
+    async function createNewColumn() {
+        // const columnToAdd: Column = {
+        //     id: generateId(),
+        //     name: `New Column ${columns.length + 1}`,
+        // };
+
+        const column = await request({
+            url: "/columns/",
+            method: "post",
+            data: { name: `New Column ${columns.length + 1}` }
+        })
+        console.log(column)
+
+        if (column) {
+            setColumns([...columns, column])
+        }
     }
 
     function deleteColumn(id: Id) {
