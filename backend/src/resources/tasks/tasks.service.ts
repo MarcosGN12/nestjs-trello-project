@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from "./types/create-task.dto";
 import { UpdateTaskDto } from "./types/update-task.dto";
 import { PrismaService } from '../../config/prisma.service';
@@ -57,6 +57,10 @@ export class TasksService {
             throw new NotFoundException('Column not found or access denied');
         }
 
+        if (!task.categoryId) {
+            throw new BadRequestException('Category ID is required');
+        }
+
         // Verifica si la categoría existe
         const foundCategory = await this.db.categories.findUnique({
             where: {
@@ -74,7 +78,7 @@ export class TasksService {
                 name: task.name,
                 description: task.description,
                 createdAt: new Date(),
-                userId: userId, // Asegúrate de incluir el userId
+                userId: userId,
                 columnId: task.columnId,
                 categoryId: task.categoryId,
             },
@@ -89,6 +93,8 @@ export class TasksService {
         if (!taskToUpdate) {
             throw new NotFoundException('Task not found or access denied');
         }
+
+        console.log({ task })
 
         const updatedTask = await this.db.tasks.update({
             where: {

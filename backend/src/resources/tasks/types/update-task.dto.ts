@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsDateString, IsNumber } from 'class-validator';
 
 export class UpdateTaskDto {
     @IsOptional()
@@ -16,4 +16,12 @@ export class UpdateTaskDto {
     @IsOptional()
     @IsDateString()
     endedAt?: string;
+
+    @IsOptional()
+    @IsNumber()
+    categoryId?: number;
+
+    @IsOptional()
+    @IsNumber()
+    columnId?: number;
 }
