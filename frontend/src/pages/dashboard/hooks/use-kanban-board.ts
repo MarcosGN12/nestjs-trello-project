@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Column, Id, Task } from "../types/types";
+import { Category, Color, Column, Task } from "../types/types";
 import { DragEndEvent, DragOverEvent, DragStartEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
 import { request } from "@/lib/axios";
+import { arrayMove } from "@dnd-kit/sortable";
 
 export function useKanbanBoard() {
     const [columns, setColumns] = useState<Column[]>([]);
@@ -14,6 +14,9 @@ export function useKanbanBoard() {
     const [activeColumn, setActiveColumn] = useState<Column | null>(null);
 
     const [activeTask, setActiveTask] = useState<Task | null>(null);
+
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [colors, setColors] = useState<Color[]>([]);
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -28,98 +31,138 @@ export function useKanbanBoard() {
             url: "/columns/",
             method: "get"
         })
-            .then((columns) => {
+            .then((columns: Column[]) => {
                 if (columns) {
                     setColumns(columns)
                 }
-            })
-    })
+            });
+    }, []);
 
     useEffect(() => {
         request({
             url: "/tasks/",
-            method: "get"
+            method: "get",
         })
-            .then((tasks) => {
+            .then((tasks: Task[]) => {
                 if (tasks) {
                     setTasks(tasks)
                 }
-            })
-    })
+            });
+    }, []);
 
+    useEffect(() => {
+        request({
+            url: "/colors/",
+            method: "get"
+        })
+            .then((colors: Color[]) => {
+                if (colors) {
+                    setColors(colors);
+                }
+            });
+    }, []);
 
-    function generateId() {
-        return Math.floor(Math.random() * 1000);
+    useEffect(() => {
+        request({
+            url: "/categories/",
+            method: "get"
+        })
+            .then((categories: Category[]) => {
+                if (categories) {
+                    setCategories(categories);
+                }
+            });
+    }, []);
+
+    async function createTask(columnId: number) {
+
+        const task = await request({
+            url: "/tasks/",
+            method: "post",
+            data: {
+                columnId,
+                categoryId: 1,
+                name: `Task ${tasks.length + 1}`,
+                description: `Description ${tasks.length + 1}`,
+            }
+        });
+        setTasks([...tasks, task]);
     }
 
-    function createTask(columnId: Id) {
-        const newTask: Task = {
-            id: generateId(),
-            columnId,
-            content: `Task ${tasks.length + 1}`,
-        }
-
-        setTasks([...tasks, newTask]);
-    }
-
-    function deleteTask(id: Id) {
-        const newTasks = tasks.filter((task) => task.id !== id);
-        setTasks(newTasks);
-    }
-
-    function updateTask(id: Id, content: string) {
-        const newTasks = tasks.map((task) => {
-            if (task.id !== id) return task;
-            return { ...task, content };
+    async function deleteTask(id: number) {
+        await request({
+            url: `/tasks/${id}/`,
+            method: "delete",
         });
 
-        setTasks(newTasks);
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+    }
+
+    async function updateTask(id: number, name: string, description: string = "", categoryId: number, columnId: number) {
+        const taskIdx = tasks.findIndex(t => t.id === id)
+
+        const updatedTask: Task = { ...tasks[taskIdx], name, description, categoryId, columnId }
+
+        console.log({ taskIdx, updatedTask })
+
+        await request({
+            url: `/tasks/${id}/`,
+            method: "put",
+            data: updatedTask,
+        });
+
+        setTasks((oldTasks) => {
+            oldTasks[taskIdx] = updatedTask
+            return [...oldTasks]
+
+        });
     }
 
     async function createNewColumn() {
-        // const columnToAdd: Column = {
-        //     id: generateId(),
-        //     name: `New Column ${columns.length + 1}`,
-        // };
-
         const column = await request({
             url: "/columns/",
             method: "post",
-            data: { name: `New Column ${columns.length + 1}` }
+            data: {
+                name: `New Column ${columns.length + 1}`,
+            }
         })
-        console.log(column)
 
         if (column) {
             setColumns([...columns, column])
         }
     }
 
-    function deleteColumn(id: Id) {
-        const filteredColumns = columns.filter(col => col.id !== id);
-        setColumns(filteredColumns);
+    async function deleteColumn(id: number) {
+        await request({
+            url: `/columns/${id}/`,
+            method: "delete",
+        });
 
-        const newTasks = tasks.filter((t) => t.columnId !== id);
-        setTasks(newTasks)
+        setColumns((prevColumns) => prevColumns.filter((column) => column.id !== id));
     }
 
-    function updateColumn(id: Id, title: string) {
-        const newColumns = columns.map((col) => {
-            if (col.id !== id) return col;
-            return { ...col, title };
+    async function updateColumn(id: number, name: string) {
+        const updatedColumn = { id, name };
+
+        await request({
+            url: `/columns/${id}/`,
+            method: "put",
+            data: updatedColumn,
         });
-        setColumns(newColumns);
+
+        setColumns((prev) => prev.map((column) => (column.id === id ? { ...column, name } : column)));
     }
 
 
     function onDragStart(event: DragStartEvent) {
-        if (event.active.data.current?.type === "column") {
-            setActiveColumn(event.active.data.current.column);
-            return;
-        }
+        const data = event.active.data.current;
+        if (!data) return;
 
-        if (event.active.data.current?.type === "Task") {
-            setActiveTask(event.active.data.current.task);
-            return;
+        if (data.type === "Column") {
+            setActiveColumn(data.column);
+        } else if (data.type === "Task") {
+            setActiveTask(data.task);
+
         }
     }
 
@@ -131,37 +174,26 @@ export function useKanbanBoard() {
 
         if (!over) return;
 
-        const activeColumnId = active.id;
-        const overColumnId = over.id;
-
-        if (activeColumnId === overColumnId) return;
-
-        setColumns(columns => {
-            const activeColumnIndex = columns.findIndex(col => col.id === activeColumnId);
-
-            const overColumnIndex = columns.findIndex(col => col.id === overColumnId);
-
-            return arrayMove(columns, activeColumnIndex, overColumnIndex);
-
-        })
+        const activeData = active.data.current;
+        const overData = over.data.current;
+        if (!activeData || !overData) return;
     }
 
-    function onDragOver(event: DragOverEvent) {
+    async function onDragOver(event: DragOverEvent) {
         const { active, over } = event;
-
         if (!over) return;
 
         const activeId = active.id;
         const overId = over.id;
-
         if (activeId === overId) return;
 
         const isActiveATask = active.data.current?.type === "Task";
-        const IsOverATask = over.data.current?.type === "Task";
+        const isOverATask = over.data.current?.type === "Task";
+        const isOverAColumn = over.data.current?.type === "Column";
 
         if (!isActiveATask) return;
 
-        if (isActiveATask && IsOverATask) {
+        if (isActiveATask && isOverATask) {
             setTasks((tasks) => {
                 const activeIndex = tasks.findIndex((t) => t.id ===
                     activeId);
@@ -174,14 +206,14 @@ export function useKanbanBoard() {
             });
         }
 
-        const isOverAColumn = over.data.current?.type === "Column";
-
         if (isActiveATask && isOverAColumn) {
             setTasks((tasks) => {
                 const activeIndex = tasks.findIndex((t) => t.id ===
                     activeId);
 
-                tasks[activeIndex].columnId = overId;
+                tasks[activeIndex].columnId = +overId;
+                const taskToUpdate = tasks[activeIndex]
+                updateTask(taskToUpdate.id, taskToUpdate.name, taskToUpdate.description, taskToUpdate.categoryId, taskToUpdate.columnId)
 
                 return arrayMove(tasks, activeIndex, activeIndex)
             });
@@ -209,7 +241,8 @@ export function useKanbanBoard() {
             columnsId,
             activeColumn,
             tasks,
-            activeTask
+            activeTask,
+            colors, categories
         },
         sensors
     }

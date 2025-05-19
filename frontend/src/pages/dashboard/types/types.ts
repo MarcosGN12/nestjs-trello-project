@@ -1,12 +1,27 @@
-export type Id = string | number;
+
 
 export type Column = {
-    id: Id;
+    id: number;
     name: string;
 }
 
 export type Task = {
-    id: Id;
-    columnId: Id;
-    content: string;
+    id: number;
+    columnId: number;
+    name: string;
+    description: string;
+    createdAt: string;
+    categoryId: number;
 }
+
+export type Category = {
+    id: number;
+    name: string;
+    colorId: number;
+};
+
+export type Color = {
+    id: number;
+    name: string;
+    value: string;
+};

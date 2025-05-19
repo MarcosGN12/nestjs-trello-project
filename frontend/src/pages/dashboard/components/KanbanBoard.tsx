@@ -12,7 +12,7 @@ export default function KanbanBoard() {
 
     const { state, sensors, tasksFns, columnsFns, dragFns } = useKanbanBoard()
 
-    const { columns, columnsId, activeColumn, tasks, activeTask } = state
+    const { columns, columnsId, activeColumn, tasks, activeTask, colors, categories } = state
 
     const { createTask, updateTask, deleteTask } = tasksFns
     const { createNewColumn, updateColumn, deleteColumn } = columnsFns
@@ -23,13 +23,17 @@ export default function KanbanBoard() {
             className="
             m-auto
             flex
+            items-start
+            pt-8
             min-h-screen
             w-full
             items-center
             overflow-x-auto
             overflow-y-hidden
-            px-[40px]  
-        "
+            px-[40px]
+            bg-gradient-to-r
+            from-gray-900
+            "
         >
             <DndContext
                 sensors={sensors}
@@ -37,7 +41,7 @@ export default function KanbanBoard() {
                 onDragEnd={onDragEnd}
                 onDragOver={onDragOver}
             >
-                <div className="m-auto flex gap-4">
+                <div className="bg-slate-800/40 backdrop-blur-md h-full rounded-xl p-6 flex gap-4 shadow-2xl shadow-black/30">
                     <div className="flex gap-4">
                         <SortableContext items={columnsId}>
                             {columns.map(col => (
@@ -49,38 +53,45 @@ export default function KanbanBoard() {
                                     createTask={createTask}
                                     deleteTask={deleteTask}
                                     updateTask={updateTask}
-                                    tasks={tasks.filter(
-                                        // deberia de ser en vez de col activeColumn pero falla
-                                        (task) => task.columnId === col.id
-                                    )}
+                                    tasks={tasks.filter(task => task.columnId === col.id)}
+                                    categories={
+                                        categories
+                                    }
+                                    colors={colors}
                                 />
                             ))}
                         </SortableContext>
                     </div>
+
                     <button
                         onClick={() => {
                             createNewColumn();
                         }}
                         className="
-            h-[60px]
-            w-[350px]
-            min-w-[350px]
-            cursor-pointer
-            rounded-lg
-            bg-mainBackgroundColor
-            border-2
-            border-columnBackgroundColor
-            p-4
-            ring-rose-500
-            hover:ring-2
-            flex
-            gap-2
-            "
+                h-[60px]
+                w-[350px]
+                min-w-[350px]
+                cursor-pointer
+                rounded-lg
+                bg-white/10
+                border-2
+                border-white/20
+                p-4
+                text-white
+                ring-rose-500
+                hover:ring-2
+                hover:bg-white/20
+                transition
+                duration-200
+                flex
+                gap-2
+                "
                     >
                         <PlusIcon />
                         Add column
                     </button>
                 </div>
+
                 {createPortal(
                     <DragOverlay>
                         {activeColumn && (
@@ -92,12 +103,19 @@ export default function KanbanBoard() {
                                 deleteTask={deleteTask}
                                 updateTask={updateTask}
                                 tasks={tasks.filter(task => task.columnId === activeColumn.id)}
+                                categories={categories}
+                                colors={
+                                    colors
+                                }
                             />
                         )}
                         {activeTask && (
-                            <TaskCard task={activeTask}
+                            <TaskCard
+                                task={activeTask}
                                 deleteTask={deleteTask}
                                 updateTask={updateTask}
+                                categories={categories}
+                                colors={colors}
                             />
                         )}
                     </DragOverlay>,

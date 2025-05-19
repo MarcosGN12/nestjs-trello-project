@@ -1,3 +1,4 @@
+import Header from "@/components/ui/header";
 import KanbanBoard from "./components/KanbanBoard";
 import { Navigate } from "react-router-dom";
 
@@ -9,6 +10,9 @@ export default function Dashboard() {
     }
 
     return (
-        <KanbanBoard />
+        <div>
+            <Header />
+            <KanbanBoard />
+        </div>
     )
 }

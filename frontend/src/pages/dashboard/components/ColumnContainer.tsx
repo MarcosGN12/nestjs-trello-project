@@ -1,6 +1,6 @@
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import TrashIcon from "../icons/TrashIcon";
-import { Column, Id, Task } from "../types/types"
+import { Category, Color, Column, Task } from "../types/types"
 import { CSS } from "@dnd-kit/utilities"
 import { useMemo, useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
@@ -8,12 +8,14 @@ import TaskCard from "./TaskCard";
 
 interface Props {
     column: Column;
-    deleteColumn: (id: Id) => void;
-    updateColumn: (id: Id, title: string) => void;
-    createTask: (columnId: Id) => void;
-    updateTask: (id: Id, content: string) => void;
-    deleteTask: (id: Id) => void;
+    deleteColumn: (id: number) => void;
+    updateColumn: (id: number, title: string) => void;
+    createTask: (columnId: number, categoryId: number) => void;
+    updateTask: (id: number, name: string, description: string, categoryId: number, columnId: number) => void;
+    deleteTask: (id: number) => void;
     tasks: Task[];
+    categories: Category[],
+    colors: Color[]
 }
 
 export default function ColumnContainer(props: Props) {
@@ -30,7 +32,7 @@ export default function ColumnContainer(props: Props) {
         useSortable({
             id: column.id,
             data: {
-                type: "column",
+                type: "Column",
                 column,
             },
             disabled: editMode,
@@ -86,7 +88,6 @@ export default function ColumnContainer(props: Props) {
             bg-mainBackgroundColor
             text-md
             h-[60px]
-            cursor-grab
             rounded-md
             rounded-b-none
             p-3
@@ -109,7 +110,7 @@ export default function ColumnContainer(props: Props) {
                 rounded-full
                 "
                     >
-                        0
+                        {tasks.length}
                     </div>
                     {!editMode && column.name}
                     {editMode && (
@@ -122,8 +123,7 @@ export default function ColumnContainer(props: Props) {
                             px-2
                             "
                             value={column.name}
-                            onChange={(e) => updateColumn(column.id, e.target.
-                                value)}
+                            onChange={(e) => updateColumn(column.id, e.target.value)}
                             autoFocus
                             onBlur={() => {
                                 setEditMode(false);
@@ -158,7 +158,10 @@ export default function ColumnContainer(props: Props) {
                             key={task.id}
                             task={task}
                             deleteTask={deleteTask}
-                            updateTask={updateTask} />
+                            updateTask={updateTask}
+                            colors={props.colors}
+                            categories={props.categories}
+                        />
                     ))}
                 </SortableContext>
             </div>
@@ -177,7 +180,7 @@ export default function ColumnContainer(props: Props) {
             hover:text-rose-500
             "
                 onClick={() => {
-                    createTask(column.id);
+                    createTask(column.id, column.id);
                 }}><PlusIcon />Add task</button>
         </div >
     );
