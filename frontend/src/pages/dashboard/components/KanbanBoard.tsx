@@ -8,6 +8,7 @@ import '../css/KanbanBoard.css'
 
 import { useKanbanBoard } from "../hooks/use-kanban-board";
 
+
 export default function KanbanBoard() {
 
     const { state, sensors, tasksFns, columnsFns, dragFns } = useKanbanBoard()
@@ -17,6 +18,7 @@ export default function KanbanBoard() {
     const { createTask, updateTask, deleteTask } = tasksFns
     const { createNewColumn, updateColumn, deleteColumn } = columnsFns
     const { onDragStart, onDragEnd, onDragOver } = dragFns
+
 
     return (
         <div

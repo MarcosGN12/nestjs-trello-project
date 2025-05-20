@@ -75,7 +75,6 @@ export function useKanbanBoard() {
     }, []);
 
     async function createTask(columnId: number) {
-
         const task = await request({
             url: "/tasks/",
             method: "post",
@@ -86,6 +85,12 @@ export function useKanbanBoard() {
                 description: `Description ${tasks.length + 1}`,
             }
         });
+
+        const column: Column = columns.find(c => c.id === columnId)!
+        const currenTaskOrder = tasks.filter(t => t.columnId === columnId).map(t => t.id)
+
+        updateColumn(columnId, column.name, [...currenTaskOrder, task.id])
+
         setTasks([...tasks, task]);
     }
 
@@ -94,6 +99,14 @@ export function useKanbanBoard() {
             url: `/tasks/${id}/`,
             method: "delete",
         });
+
+        const taskToDelete = tasks.find(t => t.id === id)!
+        const columnId = taskToDelete.columnId
+
+        const column: Column = columns.find(c => c.id === columnId)!
+        const newTaskOrder = tasks.filter((task) => task.id !== id).filter(t => t.columnId === columnId).map(t => t.id)
+
+        updateColumn(columnId, column.name, newTaskOrder)
 
         setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
     }
@@ -104,6 +117,15 @@ export function useKanbanBoard() {
         const updatedTask: Task = { ...tasks[taskIdx], name, description, categoryId, columnId }
 
         console.log({ taskIdx, updatedTask })
+
+        const taskToUpdate = tasks.find(t => t.id === id)!
+
+        if (taskToUpdate.columnId !== columnId) {
+            const column: Column = columns.find(c => c.id === columnId)!
+            const newTaskOrder = tasks.filter(t => t.columnId === columnId).map(t => t.id)
+
+            updateColumn(columnId, column.name, newTaskOrder)
+        }
 
         await request({
             url: `/tasks/${id}/`,
@@ -141,8 +163,8 @@ export function useKanbanBoard() {
         setColumns((prevColumns) => prevColumns.filter((column) => column.id !== id));
     }
 
-    async function updateColumn(id: number, name: string) {
-        const updatedColumn = { id, name };
+    async function updateColumn(id: number, name: string, taskOrder: number[]) {
+        const updatedColumn = { id, name, taskOrder };
 
         await request({
             url: `/columns/${id}/`,
@@ -150,7 +172,7 @@ export function useKanbanBoard() {
             data: updatedColumn,
         });
 
-        setColumns((prev) => prev.map((column) => (column.id === id ? { ...column, name } : column)));
+        setColumns((prev) => prev.map((column) => (column.id === id ? { ...column, name, taskOrder } : column)));
     }
 
 
@@ -177,6 +199,21 @@ export function useKanbanBoard() {
         const activeData = active.data.current;
         const overData = over.data.current;
         if (!activeData || !overData) return;
+
+        const activeId = active.id;
+        const activeIndex = tasks.findIndex((t) => t.id === activeId);
+        const taskToUpdate = tasks[activeIndex]
+        updateTask(taskToUpdate.id, taskToUpdate.name, taskToUpdate.description, taskToUpdate.categoryId, taskToUpdate.columnId)
+
+        console.log({ activeData, overData })
+        const columnId = Number(activeData.sortable.containerId)
+        const column = columns.find(c => c.id === columnId)
+
+        if (column) {
+            updateColumn(columnId, column.name, tasks.filter(t => t.columnId === columnId).map(t => t.id))
+        }
+
+
     }
 
     async function onDragOver(event: DragOverEvent) {
@@ -207,16 +244,16 @@ export function useKanbanBoard() {
         }
 
         if (isActiveATask && isOverAColumn) {
+
+
+
             setTasks((tasks) => {
-                const activeIndex = tasks.findIndex((t) => t.id ===
-                    activeId);
-
+                const activeIndex = tasks.findIndex((t) => t.id === activeId);
                 tasks[activeIndex].columnId = +overId;
-                const taskToUpdate = tasks[activeIndex]
-                updateTask(taskToUpdate.id, taskToUpdate.name, taskToUpdate.description, taskToUpdate.categoryId, taskToUpdate.columnId)
-
                 return arrayMove(tasks, activeIndex, activeIndex)
             });
+
+
         }
     }
 

@@ -45,6 +45,13 @@ export default function Register() {
             values.password
         )
 
+        // evitamos que aparezca el doble error de email ya registrado y no se ha podido logear
+        // ya que si hacemos registro nos logeamos directamente pero si falla nos saltara el error
+        // dentro del login en las siguientes lineas por su funcion que tambien tiene otro error de toast
+        if (!data) {
+            return;
+        }
+
         const success = await login(data.email, values.password);
 
         if (success) {

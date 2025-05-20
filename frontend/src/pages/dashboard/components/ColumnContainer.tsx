@@ -2,14 +2,14 @@ import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import TrashIcon from "../icons/TrashIcon";
 import { Category, Color, Column, Task } from "../types/types"
 import { CSS } from "@dnd-kit/utilities"
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
 import TaskCard from "./TaskCard";
 
 interface Props {
     column: Column;
     deleteColumn: (id: number) => void;
-    updateColumn: (id: number, title: string) => void;
+    updateColumn: (id: number, title: string, taskOrder: number[]) => void;
     createTask: (columnId: number, categoryId: number) => void;
     updateTask: (id: number, name: string, description: string, categoryId: number, columnId: number) => void;
     deleteTask: (id: number) => void;
@@ -23,9 +23,8 @@ export default function ColumnContainer(props: Props) {
 
     const [editMode, setEditMode] = useState(false)
 
-    const taskIds = useMemo(() => {
-        return tasks.map(task => task.id)
-    }, [tasks]);
+    const taskOrder = column.taskOrder
+
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging }
         =
@@ -123,7 +122,7 @@ export default function ColumnContainer(props: Props) {
                             px-2
                             "
                             value={column.name}
-                            onChange={(e) => updateColumn(column.id, e.target.value)}
+                            onChange={(e) => updateColumn(column.id, e.target.value, column.taskOrder)}
                             autoFocus
                             onBlur={() => {
                                 setEditMode(false);
@@ -152,7 +151,7 @@ export default function ColumnContainer(props: Props) {
                 </button>
             </div>
             <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
-                <SortableContext items={taskIds}>
+                <SortableContext id={`${column.id}`} items={taskOrder}>
                     {tasks.map((task) => (
                         <TaskCard
                             key={task.id}

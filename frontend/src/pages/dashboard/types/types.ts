@@ -1,8 +1,7 @@
-
-
 export type Column = {
     id: number;
     name: string;
+    taskOrder: number[];
 }
 
 export type Task = {

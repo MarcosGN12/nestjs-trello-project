@@ -1,14 +1,15 @@
-// import { Bar, BarChart } from "recharts"
+import Header from "@/components/ui/header";
+import MyChart from "./hooks/my-chart";
+import { useKanbanBoard } from "../dashboard/hooks/use-kanban-board"; // Ajusta ruta
 
-// import { ChartContainer, ChartTooltipContent } from "../../components/ui/chart";
+export default function Graphics() {
+    const { state } = useKanbanBoard();
+    const { columns, tasks } = state;
 
-// export function MyChart() {
-//     return (
-//         <ChartContainer>
-//             <BarChart data={data}>
-//                 <Bar dataKey="value" />
-//                 <ChartTooltipContent content={<ChartTooltipContent />} />
-//             </BarChart>
-//         </ChartContainer>
-//     )
-// }
+    return (
+        <div>
+            <Header />
+            <MyChart columns={columns} tasks={tasks} />
+        </div>
+    );
+}

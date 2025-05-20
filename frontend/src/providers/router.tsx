@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Register from "@/pages/register/register"
 import Account from "@/pages/account/account"
 import LogOut from "@/pages/logout/logout"
+import Graphics from "@/pages/graphics/graphics"
 
 const router = createBrowserRouter([
     {
@@ -15,7 +16,7 @@ const router = createBrowserRouter([
 
     {
         path: '/graphics',
-        element: <Dashboard />,
+        element: <Graphics />,
         errorElement: <NotFoundPage />,
     },
 
