@@ -20,6 +20,7 @@ model Columns {
   user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   tasks     Tasks[]
+  taskOrder Json
 }
 
 model Users {

@@ -13,7 +13,8 @@ export class TasksService {
         const userTasks = this.db.tasks.findMany({
             where: {
                 userId: userId
-            }
+            },
+
         })
         return userTasks;
     }
@@ -23,7 +24,8 @@ export class TasksService {
             where: {
                 id: id,
                 userId: userId
-            }
+            },
+
         });
 
         if (!task) {
@@ -93,8 +95,6 @@ export class TasksService {
         if (!taskToUpdate) {
             throw new NotFoundException('Task not found or access denied');
         }
-
-        console.log({ task })
 
         const updatedTask = await this.db.tasks.update({
             where: {

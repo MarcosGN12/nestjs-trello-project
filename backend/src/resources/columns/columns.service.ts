@@ -13,7 +13,8 @@ export class ColumnsService {
         const userColumns = this.db.columns.findMany({
             where: {
                 userId: userId
-            }
+            },
+            orderBy: { createdAt: "asc" }
         })
         return userColumns;
     }
@@ -49,6 +50,7 @@ export class ColumnsService {
             data: {
                 name: column.name,
                 userId: userId,
+                taskOrder: []
             },
         });
 

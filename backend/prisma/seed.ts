@@ -4,11 +4,14 @@ const prisma = new PrismaClient()
 async function main() {
     await prisma.colors.createMany({
         data: [
-            { name: 'Rojo', value: '#FF0000' },
-            { name: 'Verde', value: '#00FF00' },
-            { name: 'Azul', value: '#0000FF' },
-            { name: 'Amarillo', value: '#FFFF00' },
-            { name: 'Morado', value: '#800080' },
+            { name: 'Red', value: '#FF0000' },
+            { name: 'Green', value: '#00FF00' },
+            { name: 'Blue', value: '#0000FF' },
+            { name: 'Yellow', value: '#FFFF00' },
+            { name: 'Purple', value: '#800080' },
+            { name: 'Brown', value: '#A52A2A' },
+            { name: 'Pink', value: '#FFC0CB' },
+            { name: 'Black', value: '#000000' },
         ],
         skipDuplicates: true,
     })
@@ -17,16 +20,17 @@ async function main() {
 
     await prisma.categories.createMany({
         data: [
-            { name: 'Urgente', colorId: allColors[0].id },
-            { name: 'Trabajo', colorId: allColors[1].id },
+            { name: 'Urgent', colorId: allColors[0].id },
+            { name: 'Job', colorId: allColors[1].id },
             { name: 'Personal', colorId: allColors[2].id },
-            { name: 'Estudios', colorId: allColors[3].id },
-            { name: 'Otros', colorId: allColors[4].id },
+            { name: 'Studies', colorId: allColors[3].id },
+            { name: 'Health', colorId: allColors[4].id },
+            { name: 'Travel', colorId: allColors[5].id },
+            { name: 'Family', colorId: allColors[6].id },
+            { name: 'Others', colorId: allColors[7].id },
         ],
         skipDuplicates: true,
     })
-
-    console.log('✅ Colores y categorías creadas exitosamente.')
 }
 
 main()
