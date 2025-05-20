@@ -26,8 +26,6 @@ export default function KanbanBoard() {
             m-auto
             flex
             items-start
-            pt-8
-            min-h-screen
             w-full
             items-center
             overflow-x-auto
@@ -35,6 +33,7 @@ export default function KanbanBoard() {
             px-[40px]
             bg-gradient-to-r
             from-gray-900
+            pt-8
             "
         >
             <DndContext
@@ -43,7 +42,18 @@ export default function KanbanBoard() {
                 onDragEnd={onDragEnd}
                 onDragOver={onDragOver}
             >
-                <div className="bg-slate-800/40 backdrop-blur-md h-full rounded-xl p-6 flex gap-4 shadow-2xl shadow-black/30">
+                <div className="
+                bg-slate-800/40
+                backdrop-blur-md
+                h-full
+                rounded-xl
+                p-6 
+                flex
+                gap-4
+                shadow-2xl
+                shadow-black/30
+                
+                ">
                     <div className="flex gap-4">
                         <SortableContext items={columnsId}>
                             {columns.map(col => (

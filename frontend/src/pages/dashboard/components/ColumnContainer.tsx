@@ -69,9 +69,9 @@ export default function ColumnContainer(props: Props) {
             style={style}
             className="
             bg-columnBackgroundColor
-            w-[350px]
-            h-[500px]
-            max-h-[500px]
+            w-[450px]
+            h-[800px]
+            max-h-[700px]
             rounded-md
             flex
             flex-col
