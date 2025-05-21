@@ -1,11 +1,11 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Dashboard from "@/pages/dashboard/dashboard"
 import NotFoundPage from "@/pages/NotFoundPage"
 import LogIn from "@/pages/login/login"
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Register from "@/pages/register/register"
-import Account from "@/pages/account/account"
 import LogOut from "@/pages/logout/logout"
 import Graphics from "@/pages/graphics/graphics"
+import Profile from "@/pages/account/account"
 
 const router = createBrowserRouter([
     {
@@ -39,8 +39,8 @@ const router = createBrowserRouter([
     },
 
     {
-        path: '/account',
-        element: <Account />,
+        path: '/profile',
+        element: <Profile />,
         errorElement: <NotFoundPage />,
     },
 ])

@@ -7,7 +7,7 @@ import MyChart2 from "./hooks/my-chart2";
 export default function Graphics() {
 
     const { state } = useKanbanBoard();
-    const { columns, tasks, categories } = state;
+    const { columns, tasks, categories, colors } = state;
 
     const isAuthorized = localStorage.getItem("token")
 
@@ -20,7 +20,7 @@ export default function Graphics() {
             <Header />
             <div className="flex gap-5">
                 <MyChart1 columns={columns} tasks={tasks} />
-                <MyChart2 tasks={tasks} categories={categories} />
+                <MyChart2 tasks={tasks} categories={categories} colors={colors} />
             </div>
         </div>
     );

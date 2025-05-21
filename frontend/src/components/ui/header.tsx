@@ -9,7 +9,7 @@ export default function Header() {
             <nav className="flex items-center space-x-8">
                 <Link to="/" className="text-gray-300 hover:text-white font-semibold text-lg transition-colors duration-150">DashBoard</Link>
                 <Link to="/graphics" className="text-gray-300 hover:text-white font-semibold text-lg transition-colors duration-150">Graphics</Link>
-                <Link to="/account" className="text-gray-300 hover:text-white font-semibold text-lg transition-colors duration-150">Account</Link>
+                <Link to="/profile" className="text-gray-300 hover:text-white font-semibold text-lg transition-colors duration-150">Profile</Link>
                 <Link to="/logout" className="text-gray-300 hover:text-white font-semibold text-lg transition-colors duration-150">Logout</Link>
             </nav>
         </header>

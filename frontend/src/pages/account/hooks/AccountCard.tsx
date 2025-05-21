@@ -1,7 +1,37 @@
+import axios from "axios"
+import { useEffect, useState } from "react"
+
 export default function AccountCard() {
 
+    interface User {
+        name: string;
+        email: string;
+        createdAt: string;
+    }
+
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const response = await axios.get("http://localhost:3000/auth/profile", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setUser(response.data);
+            } catch (error) {
+                console.error("Error fetching profile:", error);
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center py-12 px-6">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-start justify-center py-12 px-6">
             <div className="relative max-w-2xl w-full bg-gray-900 rounded-3xl shadow-2xl overflow-hidden border border-gray-700">
 
                 <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-900 rounded-full opacity-40 blur-3xl pointer-events-none"></div>
@@ -24,7 +54,7 @@ export default function AccountCard() {
                                 />
                             </svg>
                         </div>
-                        <h1 className="text-4xl font-extrabold text-white tracking-tight">Juan Perez</h1>
+                        <h1 className="text-4xl font-extrabold text-white tracking-tight">{user?.name}</h1>
                     </div>
 
                     <div className="border-t border-gray-700 my-8"></div>
@@ -47,7 +77,7 @@ export default function AccountCard() {
                                 </svg>
                                 <span className="text-gray-300 font-semibold text-lg">Name</span>
                             </div>
-                            <span className="text-gray-400 font-medium text-lg">Juan Pérez</span>
+                            <span className="text-gray-400 font-medium text-lg">{user?.name}</span>
                         </div>
 
                         <div className="flex items-center justify-between bg-gray-800 rounded-xl p-5 shadow-inner border border-gray-700">
@@ -67,7 +97,7 @@ export default function AccountCard() {
                                 </svg>
                                 <span className="text-gray-300 font-semibold text-lg">Email</span>
                             </div>
-                            <span className="text-gray-400 font-medium text-lg">juan.perez@example.com</span>
+                            <span className="text-gray-400 font-medium text-lg">{user?.email}</span>
                         </div>
 
                         <div className="flex items-center justify-between bg-gray-800 rounded-xl p-5 shadow-inner border border-gray-700">
@@ -105,9 +135,9 @@ export default function AccountCard() {
                                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                                     />
                                 </svg>
-                                <span className="text-gray-300 font-semibold text-lg">Creación</span>
+                                <span className="text-gray-300 font-semibold text-lg">Created At</span>
                             </div>
-                            <span className="text-gray-400 font-mono text-lg tracking-widest">14/05/2025</span>
+                            <span className="text-gray-400 font-mono text-lg tracking-widest">{user?.createdAt}</span>
                         </div>
                     </div>
                 </div>
