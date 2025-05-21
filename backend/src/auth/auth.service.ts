@@ -51,4 +51,36 @@ export class AuthService {
             token,
         };
     }
+
+    async profile({ email, password }: LoginDto) {
+        const user = await this.usersService.findOneByEmail(email);
+
+        if (!user) {
+            throw new UnauthorizedException('email is wrong');
+        }
+
+        const isPasswordValid = await bcryptjs.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            throw new UnauthorizedException('password is wrong');
+        }
+
+        const payload = { userId: user.id, role: user.role };
+        const token = await this.jwtService.signAsync(payload);
+
+        return {
+            token,
+        };
+    }
+
+    async getProfile(userId: number) {
+        const user = await this.usersService.getUser(userId);
+
+        if (!user) {
+            throw new UnauthorizedException('User not found');
+        }
+
+        const { password, ...rest } = user;
+        return rest;
+    }
 }
