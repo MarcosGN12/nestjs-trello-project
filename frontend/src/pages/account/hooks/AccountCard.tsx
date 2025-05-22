@@ -1,13 +1,9 @@
+import { request } from "@/lib/axios";
 import axios from "axios"
 import { useEffect, useState } from "react"
+import { User } from "../types/types";
 
 export default function AccountCard() {
-
-    interface User {
-        name: string;
-        email: string;
-        createdAt: string;
-    }
 
     const [user, setUser] = useState<User | null>(null);
 
@@ -22,13 +18,20 @@ export default function AccountCard() {
                 });
                 setUser(response.data);
             } catch (error) {
-                console.error("Error fetching profile:", error);
+                console.error("Error getting profile:", error);
             }
         };
 
         fetchProfile();
     }, []);
 
+    async function deleteUser(id: number) {
+        await request({
+            url: `/users/${id}/`,
+            method: "delete",
+        });
+        localStorage.removeItem("token");
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-start justify-center py-12 px-6">
@@ -138,6 +141,26 @@ export default function AccountCard() {
                                 <span className="text-gray-300 font-semibold text-lg">Created At</span>
                             </div>
                             <span className="text-gray-400 font-mono text-lg tracking-widest">{user?.createdAt}</span>
+                        </div>
+                        <div className="mt-12 flex justify-center">
+                            <button
+                                onClick={() => {
+                                    if (user && user.id !== undefined) {
+                                        deleteUser(user.id);
+                                    }
+                                }}
+                                className="bg-red-600 hover:bg-red-700 cursor-pointer text-white font-bold py-3 px-8 rounded-2xl shadow-lg transition-all duration-200"
+                                type="button"
+                                disabled
+                            >
+                                Delete account
+                            </button>
+                        </div>
+
+                        <div className="flex items-center justify-center mt-8 mb-2">
+                            <div className="flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl shadow" role="alert">
+                                <span className="ml-2">Be careful to not press the delete account button if you don't wish to do it</span>
+                            </div>
                         </div>
                     </div>
                 </div>
