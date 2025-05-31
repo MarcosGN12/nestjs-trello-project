@@ -18,7 +18,7 @@ export default function Graphics() {
     return (
         <div>
             <Header />
-            <div className="flex gap-5">
+            <div className="flex flex-col md:flex-row gap-5">
                 <MyChart1 columns={columns} tasks={tasks} />
                 <MyChart2 tasks={tasks} categories={categories} colors={colors} />
             </div>

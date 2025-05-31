@@ -38,7 +38,6 @@ export default function Login() {
         <div className="min-h-screen flex items-center justify-center bg-gray-900">
             <div className="w-full max-w-md bg-gray-800 p-8 rounded-xl shadow-lg">
                 <h2 className="text-3xl font-bold text-center mb-6 text-white">Log In</h2>
-
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <FormField

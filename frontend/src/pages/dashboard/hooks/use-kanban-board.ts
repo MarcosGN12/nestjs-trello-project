@@ -81,16 +81,14 @@ export function useKanbanBoard() {
             data: {
                 columnId,
                 categoryId: 1,
-                name: `Task ${tasks.length + 1}`,
-                description: `Description ${tasks.length + 1}`,
+                name: `Title`,
+                description: `Description`,
             }
         });
-
         const column: Column = columns.find(c => c.id === columnId)!
         const currenTaskOrder = tasks.filter(t => t.columnId === columnId).map(t => t.id)
 
         updateColumn(columnId, column.name, [...currenTaskOrder, task.id])
-
         setTasks([...tasks, task]);
     }
 
@@ -107,23 +105,17 @@ export function useKanbanBoard() {
         const newTaskOrder = tasks.filter((task) => task.id !== id).filter(t => t.columnId === columnId).map(t => t.id)
 
         updateColumn(columnId, column.name, newTaskOrder)
-
         setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
     }
 
-    async function updateTask(id: number, name: string, description: string = "", categoryId: number, columnId: number) {
-        const taskIdx = tasks.findIndex(t => t.id === id)
-
-        const updatedTask: Task = { ...tasks[taskIdx], name, description, categoryId, columnId }
-
-        console.log({ taskIdx, updatedTask })
-
+    async function updateTask(id: number, name: string, description: string, categoryId: number, columnId: number) {
+        const taskIds = tasks.findIndex(t => t.id === id)
+        const updatedTask: Task = { ...tasks[taskIds], name, description, categoryId, columnId }
         const taskToUpdate = tasks.find(t => t.id === id)!
 
         if (taskToUpdate.columnId !== columnId) {
             const column: Column = columns.find(c => c.id === columnId)!
             const newTaskOrder = tasks.filter(t => t.columnId === columnId).map(t => t.id)
-
             updateColumn(columnId, column.name, newTaskOrder)
         }
 
@@ -134,9 +126,8 @@ export function useKanbanBoard() {
         });
 
         setTasks((oldTasks) => {
-            oldTasks[taskIdx] = updatedTask
+            oldTasks[taskIds] = updatedTask
             return [...oldTasks]
-
         });
     }
 
@@ -182,9 +173,9 @@ export function useKanbanBoard() {
 
         if (data.type === "Column") {
             setActiveColumn(data.column);
-        } else if (data.type === "Task") {
+        }
+        else if (data.type === "Task") {
             setActiveTask(data.task);
-
         }
     }
 
@@ -205,15 +196,12 @@ export function useKanbanBoard() {
         const taskToUpdate = tasks[activeIndex]
         updateTask(taskToUpdate.id, taskToUpdate.name, taskToUpdate.description, taskToUpdate.categoryId, taskToUpdate.columnId)
 
-        console.log({ activeData, overData })
         const columnId = Number(activeData.sortable.containerId)
         const column = columns.find(c => c.id === columnId)
 
         if (column) {
             updateColumn(columnId, column.name, tasks.filter(t => t.columnId === columnId).map(t => t.id))
         }
-
-
     }
 
     async function onDragOver(event: DragOverEvent) {
@@ -244,16 +232,11 @@ export function useKanbanBoard() {
         }
 
         if (isActiveATask && isOverAColumn) {
-
-
-
             setTasks((tasks) => {
                 const activeIndex = tasks.findIndex((t) => t.id === activeId);
                 tasks[activeIndex].columnId = +overId;
                 return arrayMove(tasks, activeIndex, activeIndex)
             });
-
-
         }
     }
 

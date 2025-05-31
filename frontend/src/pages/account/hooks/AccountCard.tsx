@@ -2,6 +2,7 @@ import { request } from "@/lib/axios";
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { User } from "../types/types";
+import { Link } from "react-router-dom";
 
 export default function AccountCard() {
 
@@ -140,10 +141,18 @@ export default function AccountCard() {
                                 </svg>
                                 <span className="text-gray-300 font-semibold text-lg">Created At</span>
                             </div>
-                            <span className="text-gray-400 font-mono text-lg tracking-widest">{user?.createdAt}</span>
+                            <span className="text-gray-400 font-mono text-lg tracking-widest">
+                                {user?.createdAt && new Date(user.createdAt).toLocaleString("es-ES", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                })}
+                            </span>
                         </div>
                         <div className="mt-12 flex justify-center">
-                            <button
+                            <Link to={"/login"}
                                 onClick={() => {
                                     if (user && user.id !== undefined) {
                                         deleteUser(user.id);
@@ -151,10 +160,9 @@ export default function AccountCard() {
                                 }}
                                 className="bg-red-600 hover:bg-red-700 cursor-pointer text-white font-bold py-3 px-8 rounded-2xl shadow-lg transition-all duration-200"
                                 type="button"
-                                disabled
                             >
                                 Delete account
-                            </button>
+                            </Link>
                         </div>
 
                         <div className="flex items-center justify-center mt-8 mb-2">

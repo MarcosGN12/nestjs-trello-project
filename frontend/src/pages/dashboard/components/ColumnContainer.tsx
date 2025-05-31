@@ -109,7 +109,7 @@ export default function ColumnContainer(props: Props) {
                 rounded-full
                 "
                     >
-                        {tasks.length}
+                        {tasks.length + " Tasks"}
                     </div>
                     {!editMode && column.name}
                     {editMode && (

@@ -18,12 +18,8 @@ export default function TaskCard({ task, deleteTask, updateTask, categories, col
     const [editedName, setEditedName] = useState(task.name);
     const [editedDescription, setEditedDescription] = useState(task.description);
 
-
-
     const category = categories.find(cat => cat.id === task.categoryId);
     const color = colors.find(col => col.id === category?.colorId);
-
-
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging } =
         useSortable({

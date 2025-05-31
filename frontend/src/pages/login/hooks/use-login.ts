@@ -10,8 +10,6 @@ export function useLogin() {
                 data: { email, password }
             })
 
-            console.log({ data });
-
             const token = data.token;
 
             if (token) {
