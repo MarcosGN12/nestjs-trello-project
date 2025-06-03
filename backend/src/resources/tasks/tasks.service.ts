@@ -3,7 +3,6 @@ import { CreateTaskDto } from "./types/create-task.dto";
 import { UpdateTaskDto } from "./types/update-task.dto";
 import { PrismaService } from '../../config/prisma.service';
 import { Task } from './types/task.type';
-import { User } from '../users/types/user.type';
 
 @Injectable()
 export class TasksService {
@@ -36,16 +35,6 @@ export class TasksService {
     }
 
     async createTask(task: CreateTaskDto, userId: number): Promise<Task> {
-        // Verifica si el nombre de la tarea ya existe
-        const taskNameExists = await this.db.tasks.findUnique({
-            where: {
-                name: task.name,
-            },
-        });
-
-        if (taskNameExists) {
-            throw new NotFoundException('Task name already exists');
-        }
 
         // Verifica si la columna existe y pertenece al usuario
         const foundColumn = await this.db.columns.findUnique({
@@ -89,7 +78,7 @@ export class TasksService {
         return createdTask;
     }
 
-    async updateTask(id: number, task: UpdateTaskDto, userId: number): Promise<Task> {
+    async updateTask(id: number, description: string, task: UpdateTaskDto, userId: number): Promise<Task> {
         const taskToUpdate = await this.existsTask(id, userId);
 
         if (!taskToUpdate) {
@@ -99,11 +88,11 @@ export class TasksService {
         const updatedTask = await this.db.tasks.update({
             where: {
                 id: id,
+                description: description,
                 userId: userId
             },
             data: task
         });
-
         return updatedTask;
     }
 
@@ -131,10 +120,6 @@ export class TasksService {
                 userId: userId
             }
         });
-    }
-
-    private async existsUser(id: number): Promise<User | null> {
-        return this.db.users.findUnique({ where: { id: id } });
     }
 }
 

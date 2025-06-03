@@ -26,8 +26,8 @@ export class ColorsController {
         return this.colorsService.createColor(color)
     }
 
-    @Auth(Role.ADMIN)
     @Put('/:id')
+    @Auth(Role.ADMIN)
     updateColor(@Param('id') id: string, @Body() color: UpdateColorDto): Promise<Color> {
         return this.colorsService.updateColor(parseInt(id), color);
     }

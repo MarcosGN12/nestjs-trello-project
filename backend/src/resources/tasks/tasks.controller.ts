@@ -31,8 +31,8 @@ export class TasksController {
 
     @Put('/:id')
     @UseGuards(AuthGuard)
-    updateTask(@Param('id') id: string, @Body() task: UpdateTaskDto, @GetUserId() userId: number): Promise<Task> {
-        return this.tasksService.updateTask(parseInt(id), task, userId);
+    updateTask(@Param('id') id: string, description: string, @Body() task: UpdateTaskDto, @GetUserId() userId: number): Promise<Task> {
+        return this.tasksService.updateTask(parseInt(id), description, task, userId);
     }
 
     @Delete('/:id')

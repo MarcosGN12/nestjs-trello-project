@@ -58,7 +58,6 @@ export class ColumnsService {
     }
 
     async updateColumn(id: number, column: UpdateColumnDto, userId: number): Promise<Column> {
-        console.log({ id, column })
         const columnToUpdate = await this.existsColumn(id, userId)
 
         if (!columnToUpdate) {
